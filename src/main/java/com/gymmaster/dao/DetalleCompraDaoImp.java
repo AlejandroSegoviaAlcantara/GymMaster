@@ -1,6 +1,7 @@
 package com.gymmaster.dao;
 
 import com.gymmaster.models.Compras;
+import com.gymmaster.models.DetalleCompra;
 import com.gymmaster.models.Entrenamientos;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -11,24 +12,24 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class ComprasDaoImp implements ComprasDao {
+public class DetalleCompraDaoImp implements DetalleCompraDao {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     public List<Compras> getCompras() {
-        String query = "FROM Compras";
+        String query = "FROM DetalleCompra";
         return entityManager.createQuery(query).getResultList();
     }
     @Override
-    public void carrito(Compras compras){
-        entityManager.merge(compras);
+    public void carrito(DetalleCompra detalleCompra){
+        entityManager.merge(detalleCompra);
     }
     @Override
     public void eliminar(Long id){
-        Compras compras = entityManager.find(Compras.class, id);
-        entityManager.remove(compras);
+        DetalleCompra detalleCompra = entityManager.find(DetalleCompra.class, id);
+        entityManager.remove(detalleCompra);
     }
 
 }
