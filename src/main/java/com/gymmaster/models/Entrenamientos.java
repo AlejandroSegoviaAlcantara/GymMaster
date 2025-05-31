@@ -20,8 +20,8 @@ public class Entrenamientos {
     @Getter @Setter @Column(name = "id_usuario")
     private Long idUsuario;
 
-    @Getter @Setter @Column(name = "fecha")
-    private Date fecha;
+    @Getter @Setter @Column(name = "dia")
+    private String Dia;
 
     @Getter @Setter @Column(name = "ejercicio ")
     private String ejercicio ;

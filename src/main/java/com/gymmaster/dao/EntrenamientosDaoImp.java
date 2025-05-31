@@ -33,4 +33,22 @@ public class EntrenamientosDaoImp implements EntrenamientosDao {
     public void registrar(Entrenamientos entrenamientos) {
         entityManager.merge(entrenamientos);
     }
+
+    @Override
+    public Entrenamientos obtenerPorId(Long id) {
+        return entityManager.find(Entrenamientos.class, id);
+    }
+
+    @Override
+    public void actualizar(Entrenamientos entrenamiento) {
+        entityManager.merge(entrenamiento);
+    }
+
+    @Override
+    public List<Entrenamientos> getEntrenamientosPorUsuario(Long idUsuario) {
+        String query = "FROM Entrenamientos WHERE idUsuario = :idUsuario";
+        return entityManager.createQuery(query, Entrenamientos.class)
+                .setParameter("idUsuario", idUsuario)
+                .getResultList();
+    }
 }

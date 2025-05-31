@@ -23,8 +23,8 @@ public class DetalleCompraDaoImp implements DetalleCompraDao {
         return entityManager.createQuery(query).getResultList();
     }
     @Override
-    public void carrito(DetalleCompra detalleCompra){
-        entityManager.merge(detalleCompra);
+    public void carrito(Compras compra) {
+        entityManager.persist(compra);
     }
     @Override
     public void eliminar(Long id){

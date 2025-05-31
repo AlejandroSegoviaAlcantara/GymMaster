@@ -2,7 +2,9 @@ package com.gymmaster.controllers;
 
 import com.gymmaster.dao.UsuarioDao;
 import com.gymmaster.models.Usuario;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -29,5 +31,20 @@ public class UsuarioController {
     public void eliminar(@PathVariable Long id) {
         usuarioDao.eliminar(id);
     }
+
+    @RequestMapping(value="api/usuarios/{id}", method = RequestMethod.GET)
+    public Usuario getUsuario(@PathVariable Long id){
+        return usuarioDao.getUsuario(id);
+    }
+
+    @GetMapping("/api/usuario/rol")
+    public ResponseEntity<?> obtenerRol(HttpSession session) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario == null) {
+            return ResponseEntity.status(401).body("No autenticado");
+        }
+        return ResponseEntity.ok(usuario.getRol());
+    }
+
 
 }

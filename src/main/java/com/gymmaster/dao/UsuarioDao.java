@@ -8,9 +8,11 @@ public interface UsuarioDao {
 
     List<Usuario> getUsuarios();
 
+    Usuario getUsuario(Long id);
+
     void eliminar(Long id);
 
     void registrar(Usuario usuario);
 
-    boolean verificarCredenciales(Usuario usuario);
+    Usuario verificarCredenciales(Usuario usuario);
 }

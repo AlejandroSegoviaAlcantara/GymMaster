@@ -2,11 +2,12 @@ package com.gymmaster.controllers;
 
 import com.gymmaster.dao.UsuarioDao;
 import com.gymmaster.models.Usuario;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class AuthController {
@@ -14,12 +15,31 @@ public class AuthController {
     @Autowired
     private UsuarioDao usuarioDao;
 
-    @RequestMapping(value="api/login", method = RequestMethod.POST)
-    public String login(@RequestBody Usuario usuario) {
-        if(usuarioDao.verificarCredenciales(usuario)){
-            return "OK";
-        }else {
-            return "FAIL";
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Usuario usuario, HttpSession session) {
+        Usuario usuarioAutenticado = usuarioDao.verificarCredenciales(usuario);
+
+        if (usuarioAutenticado != null) {
+            session.setAttribute("usuario", usuarioAutenticado);
+            return ResponseEntity.ok(usuarioAutenticado); // Puedes acceder a rol, id, etc.
+        } else {
+            return ResponseEntity.status(401).body("Credenciales incorrectas");
         }
     }
+
+    @PostMapping("/api/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok("Sesión cerrada");
+    }
+
+    @GetMapping("api/usuario/sesion")
+    public Usuario getUsuarioEnSesion(@SessionAttribute(name = "usuario", required = false) Usuario usuario) {
+        if (usuario == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        return usuario;
+    }
+
+
 }

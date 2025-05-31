@@ -1,29 +1,78 @@
-$(document).ready(function() {
-    // on ready
+document.addEventListener("DOMContentLoaded", () => {
+    // Login form listener
+    document.getElementById("login-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        await iniciarSesion();
+    });
+
+    // Registro form listener
+    document.getElementById("register-submit").addEventListener("click", async function () {
+        await registrarUsuario();
+    });
 });
 
+// Mostrar login
+function login(event) {
+    event.preventDefault();
+    document.getElementById("carrusel").classList.add("hidden");
+    document.getElementById("Login").classList.remove("hidden");
+}
 
+// Mostrar registro
+function registro() {
+    document.getElementById("register-form").classList.remove("hidden");
+    document.getElementById("login-form").classList.add("hidden");
+}
+
+// Volver al login desde el registro
+function mostrarLoginForm() {
+    document.getElementById("register-form").classList.add("hidden");
+    document.getElementById("login-form").classList.remove("hidden");
+}
+
+// Iniciar sesión
 async function iniciarSesion() {
-    let datos = {};
-    datos.email = document.getElementById('txtEmail').value;
-    datos.password = document.getElementById('txtPassword').value;
+    const datos = {
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+    };
 
-    const request = await fetch('api/login', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
+    const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(datos)
     });
 
-    const respuesta = await request.text();
-    if (respuesta != 'FAIL') {
-        localStorage.token = respuesta;
-        localStorage.email = datos.email;
-        window.location.href = 'usuarios.html'
+    if (response.ok) {
+        const usuario = await response.json();
+        if (usuario.rol === "ADMIN") {
+            window.location.href = "admin.html";
+        } else {
+            window.location.href = "perfil.html";
+        }
     } else {
-        alert("Las credenciales son incorrectas. Por favor intente nuevamente.");
+        alert("Credenciales incorrectas");
     }
+}
 
+// Registrar usuario
+async function registrarUsuario() {
+    const datos = {
+        email: document.getElementById("register-email").value,
+        password: document.getElementById("register-password").value
+    };
+
+    const response = await fetch("/api/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+    });
+
+    if (response.ok) {
+        alert("Usuario registrado. Inicia sesión.");
+        mostrarLoginForm();
+    } else {
+        alert("Error al registrar usuario.");
+    }
 }

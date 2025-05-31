@@ -12,4 +12,10 @@ public interface EntrenamientosDao {
 
     void registrar(Entrenamientos entrenamientos);
 
+    List<Entrenamientos> getEntrenamientosPorUsuario(Long idUsuario);
+
+    Entrenamientos obtenerPorId(Long id);
+
+    void actualizar(Entrenamientos entrenamiento);
+
 }
