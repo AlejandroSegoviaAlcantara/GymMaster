@@ -1,11 +1,29 @@
-// Cargar datos del usuario
-fetch("/api/usuario/sesion")
-    .then(res => {
-        if (!res.ok) {
-            window.location.href = "login.html";
-        }
-        return res.json();
-    })
+// === Utils ===
+
+function getAuthHeaders() {
+    const token = localStorage.getItem("token");
+    return {
+        "Authorization": "Bearer " + token
+    };
+}
+
+function verificarSesion(response) {
+    if (!response.ok) {
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
+        throw new Error("Sesión inválida");
+    }
+    return response;
+}
+
+// === Cargar datos del usuario ===
+
+fetch("/api/usuario/sesion", {
+    method: "GET",
+    headers: getAuthHeaders()
+})
+    .then(verificarSesion)
+    .then(res => res.json())
     .then(usuario => {
         document.querySelector(".profile-info h3").textContent = `Usuario: ${usuario.nombre} ${usuario.apellido}`;
         document.querySelector(".profile-info").innerHTML += `
@@ -13,17 +31,18 @@ fetch("/api/usuario/sesion")
             <p>Altura: ${usuario.altura} cm</p>
             <p>Correo: ${usuario.email}</p>
         `;
-    });
+    })
+    .catch(err => console.error("Error cargando perfil:", err));
 
-// Cargar entrenamientos
+// === Cargar entrenamientos ===
+
 function cargarEntrenamientos() {
-    fetch("/api/usuario/entrenamientos")
-        .then(res => {
-            if (!res.ok) {
-                window.location.href = "login.html";
-            }
-            return res.json();
-        })
+    fetch("/api/usuario/entrenamientos", {
+        method: "GET",
+        headers: getAuthHeaders()
+    })
+        .then(verificarSesion)
+        .then(res => res.json())
         .then(entrenamientos => {
             const tabla = document.querySelector("#tablaEntrenos tbody");
             tabla.innerHTML = "";
@@ -54,24 +73,24 @@ function cargarEntrenamientos() {
                 fila.querySelector(".eliminar-btn").addEventListener("click", () => {
                     if (confirm("¿Seguro que deseas eliminar este entrenamiento?")) {
                         fetch(`/api/usuario/entrenamientos/${entreno.idEntrenamiento}`, {
-                            method: "DELETE"
-                        }).then(res => {
-                            if (res.ok) {
-                                cargarEntrenamientos();
-                            } else {
-                                alert("Error al eliminar el entrenamiento.");
-                            }
-                        });
+                            method: "DELETE",
+                            headers: getAuthHeaders()
+                        })
+                            .then(verificarSesion)
+                            .then(() => cargarEntrenamientos())
+                            .catch(() => alert("Error al eliminar el entrenamiento."));
                     }
                 });
 
                 tabla.appendChild(fila);
             });
-        });
+        })
+        .catch(err => console.error("Error al cargar entrenamientos:", err));
 }
 cargarEntrenamientos();
 
-// Crear / editar entrenamiento
+// === Crear / editar entrenamiento ===
+
 document.getElementById("formEntreno").addEventListener("submit", e => {
     e.preventDefault();
 
@@ -88,15 +107,24 @@ document.getElementById("formEntreno").addEventListener("submit", e => {
 
     fetch(url, {
         method: method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders()
+        },
         body: JSON.stringify(entrenamiento)
-    }).then(res => {
-        if (res.ok) {
+    })
+        .then(verificarSesion)
+        .then(() => {
             document.getElementById("formEntreno").reset();
             document.getElementById("entrenoId").value = "";
             cargarEntrenamientos();
-        } else {
-            alert("Error al guardar el entrenamiento.");
-        }
-    });
+        })
+        .catch(() => alert("Error al guardar el entrenamiento."));
 });
+
+// === Cerrar sesión ===
+
+function cerrarSesion() {
+    localStorage.removeItem("token");
+    window.location.href = "index.html";
+}

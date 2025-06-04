@@ -23,7 +23,14 @@ async function registrarUsuarios() {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(datos)
+        body: JSON.stringify(dato,
+    {
+        ...s,
+        headers: {
+            ...s.headers,
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    })
     })
     const usuarios = await request.json();
 }

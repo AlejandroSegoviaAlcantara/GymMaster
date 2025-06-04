@@ -18,12 +18,12 @@ public class PistaDaoImp implements PistaDao {
     @Override
     public List<Pista> getTodas() {
         String query = "FROM Pista";
-        return entityManager.createQuery(query).getResultList();
+        return entityManager.createQuery(query, Pista.class).getResultList();
     }
 
     @Override
     public void guardar(Pista pista) {
-        entityManager.merge(pista);
+        entityManager.persist(pista);
     }
 
     @Override

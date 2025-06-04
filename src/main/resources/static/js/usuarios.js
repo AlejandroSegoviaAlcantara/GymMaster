@@ -15,6 +15,11 @@ async function cargarUsuarios() {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
+    ,
+        headers: {
+            ...}.headers,
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
     })
     const usuarios = await request.json();
 
@@ -45,6 +50,13 @@ async function eliminarUsuario(id){
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
+        }
+    ,
+    {
+        ...},
+        headers: {
+            ...}.headers,
+            "Authorization": "Bearer " + localStorage.getItem("token")
         }
     });
 

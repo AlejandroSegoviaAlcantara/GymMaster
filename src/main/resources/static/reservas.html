@@ -7,46 +7,45 @@
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <header>
-        <h1>GymMaster</h1>
-        <nav>
-            <a href="index.html">Inicio</a>
-            <a href="perfil.html">Perfil</a>
-            <a href="admin.html">Administrador</a>
-            <a href="reservas.html">Reservas</a>
-            <a href="tienda.html">Tienda</a>
-        </nav>
-    </header>
+<header>
+    <h1>GymMaster</h1>
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="perfil.html">Perfil</a>
+        <a href="admin.html">Administrador</a>
+        <a href="reservas.html">Reservas</a>
+        <a href="tienda.html">Tienda</a>
+    </nav>
+</header>
 
-    <section class="reservas-container">
-        <h2>Reservar Clase</h2>
+<section class="reservas-container">
+    <h2>Reservar Clase</h2>
 
-        <form class="reserva-form">
-            <label for="fecha">Fecha</label>
-            <input type="date" id="fecha" required />
+    <form class="reserva-form">
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" required />
 
-            <label for="hora">Hora</label>
-            <input type="time" id="hora" required />
+        <label for="hora">Hora</label>
+        <input type="time" id="hora" required />
 
-            <label for="pista">Pista</label>
-<select id="pista" required>
-    <option value="">--Selecciona pista--</option>
-    <option value="yoga">Yoga</option>
-    <option value="spinning">Spinning</option>
-    <option value="crossfit">CrossFit</option>
-</select>
+        <label for="pista">Pista</label>
+        <select id="pista" required>
+            <option value="">--Selecciona pista--</option>
+        </select>
 
+        <button type="submit" class="cta-button">Reservar</button>
+    </form>
 
-            <button type="submit" class="cta-button">Reservar</button>
-        </form>
+    <h3>Mis Reservas</h3>
+    <ul class="reservas-lista">
+        <!-- Aquí se agregan dinámicamente las reservas -->
+    </ul>
+</section>
 
-        <h3>Mis Reservas</h3>
-        <ul class="reservas-lista">
-        </ul>
-    </section>
+<footer>
+    &copy; 2025 GymMaster. Todos los derechos reservados.
+</footer>
 
-    <footer>
-        &copy; 2025 GymMaster. Todos los derechos reservados.
-    </footer>
+<script src="js/reservas.js"></script>
 </body>
 </html>

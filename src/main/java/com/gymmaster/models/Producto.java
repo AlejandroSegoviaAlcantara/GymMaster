@@ -8,9 +8,9 @@ import lombok.ToString;
 
 
 @Entity
-@Table(name = "productos")
+@Table(name = "producto")
 @ToString @EqualsAndHashCode
-public class Productos {
+public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

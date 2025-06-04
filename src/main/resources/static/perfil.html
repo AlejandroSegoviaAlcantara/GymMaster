@@ -7,50 +7,56 @@
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <header>
-        <h1>GymMaster</h1>
-        <nav>
-            <a href="index.html">Inicio</a>
-            <a href="perfil.html">Perfil</a>
-            <a href="admin.html">Administrador</a>
-            <a href="reservas.html">Reservas</a>
-            <a href="tienda.html">Tienda</a>
-        </nav>
-    </header>
+<script>
+    // 🔒 Verifica si hay token al entrar
+    if (!localStorage.getItem("token")) {
+        window.location.href = "index.html";
+    }
+</script>
 
-    <section class="profile-container">
-        <h2>Mi Perfil</h2>
-        <div class="profile-card">
-            <img src="img/usuario.png" alt="Foto usuario" class="profile-img">
-            <div class="profile-info">
-                <h3>Usuario: XXXXX YYYY</h3>
-                <p>Peso:</p>
-                <p>Altura:</p>
-                <p>Correo:</p>
-            </div>
+<header>
+    <h1>GymMaster</h1>
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="perfil.html">Perfil</a>
+        <a href="admin.html">Administrador</a>
+        <a href="reservas.html">Reservas</a>
+        <a href="tienda.html">Tienda</a>
+    </nav>
+</header>
+
+<section class="profile-container">
+    <h2>Mi Perfil</h2>
+    <div class="profile-card">
+        <img src="img/usuario.png" alt="Foto usuario" class="profile-img">
+        <div class="profile-info">
+            <h3>Usuario: </h3>
+            <p>Peso:</p>
+            <p>Altura:</p>
+            <p>Correo:</p>
         </div>
+    </div>
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
 
-        <h3>Añadir / Modificar Entrenamiento</h3>
-<form id="formEntreno">
-    <select id="dia" required>
-        <option>Lunes</option>
-        <option>Martes</option>
-        <option>Miércoles</option>
-        <option>Jueves</option>
-        <option>Viernes</option>
-    </select>
-    <input type="text" id="ejercicio" placeholder="Ejercicio" required />
-    <input type="number" id="repeticiones" placeholder="Repeticiones" required />
-    <input type="number" id="peso" step="0.1" placeholder="Peso (kg)" required />
-    <input type="hidden" id="entrenoId" />
-    <button type="submit">Guardar</button>
-</form>
+    <h3>Añadir / Modificar Entrenamiento</h3>
+    <form id="formEntreno">
+        <select id="dia" required>
+            <option>Lunes</option>
+            <option>Martes</option>
+            <option>Miércoles</option>
+            <option>Jueves</option>
+            <option>Viernes</option>
+        </select>
+        <input type="text" id="ejercicio" placeholder="Ejercicio" required />
+        <input type="number" id="repeticiones" placeholder="Repeticiones" required />
+        <input type="number" id="peso" step="0.1" placeholder="Peso (kg)" required />
+        <input type="hidden" id="entrenoId" />
+        <button type="submit">Guardar</button>
+    </form>
 
-
-
-        <h3>Historial de Entrenamiento</h3>
-        <table id="tablaEntrenos" class="training-table">
-    <thead>
+    <h3>Historial de Entrenamiento</h3>
+    <table id="tablaEntrenos" class="training-table">
+        <thead>
         <tr>
             <th>Día</th>
             <th>Ejercicio</th>
@@ -58,16 +64,16 @@
             <th>Peso</th>
             <th>Acciones</th>
         </tr>
-    </thead>
-    <tbody>
-        
-    </tbody>
-</table>
+        </thead>
+        <tbody></tbody>
+    </table>
+</section>
 
-    </section>
+<footer>
+    &copy; 2025 GymMaster. Todos los derechos reservados.
+</footer>
 
-    <footer>
-        &copy; 2025 GymMaster. Todos los derechos reservados.
-    </footer>
+<script src="js/perfil.js"></script>
+<script src="js/logout.js"></script>
 </body>
 </html>

@@ -1,36 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Login form listener
     document.getElementById("login-form").addEventListener("submit", async function (e) {
         e.preventDefault();
         await iniciarSesion();
     });
 
-    // Registro form listener
     document.getElementById("register-submit").addEventListener("click", async function () {
         await registrarUsuario();
     });
 });
 
-// Mostrar login
 function login(event) {
     event.preventDefault();
     document.getElementById("carrusel").classList.add("hidden");
     document.getElementById("Login").classList.remove("hidden");
 }
 
-// Mostrar registro
 function registro() {
     document.getElementById("register-form").classList.remove("hidden");
     document.getElementById("login-form").classList.add("hidden");
 }
 
-// Volver al login desde el registro
 function mostrarLoginForm() {
     document.getElementById("register-form").classList.add("hidden");
     document.getElementById("login-form").classList.remove("hidden");
 }
 
-// Iniciar sesión
 async function iniciarSesion() {
     const datos = {
         email: document.getElementById("email").value,
@@ -40,13 +34,14 @@ async function iniciarSesion() {
     const response = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(datos)
     });
 
     if (response.ok) {
-        const usuario = await response.json();
-        if (usuario.rol === "ADMIN") {
+        const result = await response.json();
+        localStorage.setItem("token", result.token);
+        console.log("Token recibido:", result.token);
+        if (result.rol === "ADMIN") {
             window.location.href = "admin.html";
         } else {
             window.location.href = "perfil.html";
@@ -56,7 +51,6 @@ async function iniciarSesion() {
     }
 }
 
-// Registrar usuario
 async function registrarUsuario() {
     const datos = {
         email: document.getElementById("register-email").value,

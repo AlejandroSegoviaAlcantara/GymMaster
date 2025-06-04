@@ -1,9 +1,24 @@
-document.addEventListener("DOMContentLoaded", () => {
-    showSlides();
-});
+document.addEventListener("DOMContentLoaded", showSlides);
+function registro() {
+    // Mostrar el formulario de registro
+    document.getElementById("register-form").classList.remove("hidden");
 
-// Mostrar slides del carrusel
+    // Ocultar el formulario de login
+    document.getElementById("login-form").classList.add("hidden");
+}
+
+/*function login() {
+    document.getElementById("carrusel").setAttribute(hidden);
+    document.getElementById("login").removeAttribute(hidden);
+}*/
+function login(event) {
+        document.getElementById("carrusel").classList.add("hidden");
+        document.getElementById("Login").classList.remove("hidden");
+}
+
+
 let slideIndex = 0;
+
 function showSlides() {
     const slides = document.getElementsByClassName("carrusel-slide");
     for (let i = 0; i < slides.length; i++) {
@@ -12,5 +27,5 @@ function showSlides() {
     slideIndex++;
     if (slideIndex > slides.length) { slideIndex = 1; }
     slides[slideIndex - 1].style.display = "block";
-    setTimeout(showSlides, 3000);
+    setTimeout(showSlides, 3000); // Cambia cada 3 segundos
 }

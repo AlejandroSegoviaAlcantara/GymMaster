@@ -1,57 +1,58 @@
 package com.gymmaster.controllers;
 
 import com.gymmaster.dao.EntrenamientosDao;
-import com.gymmaster.dao.UsuarioDao;
 import com.gymmaster.models.Entrenamientos;
 import com.gymmaster.models.Usuario;
-import jakarta.servlet.http.HttpSession;
+import com.gymmaster.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-
+@RequestMapping("/api/usuario/entrenamientos")
 public class EntrenamientosController {
 
     @Autowired
     private EntrenamientosDao entrenamientosDao;
 
-    @RequestMapping(value="api/entrenamientos", method = RequestMethod.GET)
-    public List <Entrenamientos> getEntrenamientos() {
-        return entrenamientosDao.getEntrenamientos();
-    }
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    @RequestMapping(value="api/entrenamientos", method = RequestMethod.POST)
-    public void registrar(@RequestBody Entrenamientos entrenamientos) {
-        entrenamientosDao.registrar(entrenamientos);
-    }
-
-    @PostMapping("/api/usuario/entrenamientos")
-    public void crearEntrenamiento(@RequestBody Entrenamientos entrenamiento, HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    private Long extraerIdUsuario(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token no válido");
         }
+        String token = authHeader.substring(7);
+        return jwtUtil.getIdUsuario(token);
+    }
 
-        entrenamiento.setIdUsuario(usuario.getId());
+    @GetMapping
+    public List<Entrenamientos> getEntrenamientosPorUsuario(@RequestHeader("Authorization") String token) {
+        Long idUsuario = extraerIdUsuario(token);
+        return entrenamientosDao.getEntrenamientosPorUsuario(idUsuario);
+    }
+
+    @PostMapping
+    public ResponseEntity<?> crearEntrenamiento(@RequestHeader("Authorization") String token,
+                                                @RequestBody Entrenamientos entrenamiento) {
+        Long idUsuario = extraerIdUsuario(token);
+        entrenamiento.setIdUsuario(idUsuario);
         entrenamientosDao.registrar(entrenamiento);
+        return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/api/usuario/entrenamientos/{id}")
-    public void actualizarEntrenamiento(@PathVariable Long id, @RequestBody Entrenamientos entrenamiento, HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
-
-        // Asegúrate de que el entrenamiento pertenece al usuario
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarEntrenamiento(@PathVariable Long id,
+                                                     @RequestBody Entrenamientos entrenamiento,
+                                                     @RequestHeader("Authorization") String token) {
+        Long idUsuario = extraerIdUsuario(token);
         Entrenamientos actual = entrenamientosDao.obtenerPorId(id);
-        if (actual == null || !actual.getIdUsuario().equals(usuario.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        if (actual == null || !actual.getIdUsuario().equals(idUsuario)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         actual.setDia(entrenamiento.getDia());
@@ -60,22 +61,19 @@ public class EntrenamientosController {
         actual.setPeso(entrenamiento.getPeso());
 
         entrenamientosDao.actualizar(actual);
+        return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value="api/entrenamientos/{id}", method = RequestMethod.DELETE)
-    public void eliminar(@PathVariable Long id) {
-        entrenamientosDao.eliminar(id);
-    }
-
-    @GetMapping("/api/usuario/entrenamientos")
-    public List<Entrenamientos> getEntrenamientosPorUsuario(HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Long id,
+                                      @RequestHeader("Authorization") String token) {
+        Long idUsuario = extraerIdUsuario(token);
+        Entrenamientos entrenamiento = entrenamientosDao.obtenerPorId(id);
+        if (entrenamiento == null || !entrenamiento.getIdUsuario().equals(idUsuario)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return entrenamientosDao.getEntrenamientosPorUsuario(usuario.getId());
+
+        entrenamientosDao.eliminar(id);
+        return ResponseEntity.ok().build();
     }
-
-
-
 }

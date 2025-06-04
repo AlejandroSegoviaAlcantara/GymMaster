@@ -1,94 +1,119 @@
-// Verificar sesión
-fetch("/api/usuario/sesion")
-    .then(res => {
-        if (!res.ok) window.location.href = "login.html";
-        return res.json();
-    })
-    .then(() => {
-        cargarPistas();
-        cargarReservas();
-    });
+document.addEventListener("DOMContentLoaded", () => {
+    cargarPistas();       // <-- Añadir esto
+    cargarReservas();
 
-// Cargar opciones de pistas dinámicamente
-function cargarPistas() {
-    fetch("/api/pistas")
-        .then(res => res.json())
-        .then(pistas => {
-            const select = document.getElementById("pista");
-            select.innerHTML = `<option value="">--Selecciona una clase--</option>`;
-            pistas.forEach(p => {
-                const option = document.createElement("option");
-                option.value = p.nombre;
-                option.textContent = p.nombre;
-                select.appendChild(option);
-            });
-        });
-}
-
-// Manejar formulario
-document.querySelector(".reserva-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const reserva = {
-        fecha: document.getElementById("fecha").value,
-        hora: document.getElementById("hora").value,
-        pista: document.getElementById("pista").value
-    };
-
-    fetch("/api/usuario/reservas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reserva)
-    })
-    .then(res => {
-        if (res.ok) {
-            this.reset();
-            cargarReservas();
-        } else {
-            alert("No se pudo registrar la reserva.");
-        }
+    document.querySelector(".reserva-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        crearReserva();
     });
 });
 
-// Mostrar reservas del usuario
 function cargarReservas() {
-    fetch("/api/usuario/reservas")
-        .then(res => res.json())
+    fetch("/api/usuario/reservas", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    })
+        .then(res => {
+            if (!res.ok) {
+                window.location.href = "index.html";
+            }
+            return res.json();
+        })
         .then(reservas => {
             const lista = document.querySelector(".reservas-lista");
             lista.innerHTML = "";
 
-            reservas.forEach(r => {
-                const fecha = new Date(r.fecha).toLocaleDateString("es-ES");
-                const hora = r.hora?.slice(0,5);
-                const icono = getIcono(r.pista);
-
+            reservas.forEach(reserva => {
                 const li = document.createElement("li");
-                li.innerHTML = `🗓️ ${fecha} - 🕓 ${hora} - ${icono} ${r.pista}
-                    <button class="eliminar-reserva">❌</button>`;
+                const fecha = new Date(reserva.fecha).toLocaleDateString("es-ES");
+                const hora = reserva.hora;
+                li.textContent = `${fecha} - ${hora} - ${reserva.pista} `;
 
-                li.querySelector(".eliminar-reserva").addEventListener("click", () => {
-                    if (confirm("¿Eliminar esta reserva?")) {
-                        fetch(`/api/usuario/reservas/${r.idReserva}`, {
-                            method: "DELETE"
-                        }).then(resp => {
-                            if (resp.ok) cargarReservas();
-                            else alert("Error al eliminar");
+                // Botón eliminar
+                const btnEliminar = document.createElement("button");
+                btnEliminar.textContent = "❌";
+                btnEliminar.style.marginLeft = "10px";
+                btnEliminar.onclick = () => {
+                    if (confirm("¿Seguro que quieres eliminar esta reserva?")) {
+                        fetch(`/api/usuario/reservas/${reserva.idReserva}`, {
+                            method: "DELETE",
+                            headers: {
+                                "Authorization": "Bearer " + localStorage.getItem("token")
+                            }
+                        }).then(res => {
+                            if (res.ok) {
+                                cargarReservas();
+                            } else {
+                                alert("Error al eliminar la reserva.");
+                            }
                         });
                     }
-                });
+                };
 
+                li.appendChild(btnEliminar);
                 lista.appendChild(li);
             });
         });
 }
 
-// Icono por tipo de pista
-function getIcono(pista) {
-    switch (pista.toLowerCase()) {
-        case "yoga": return "💪";
-        case "spinning": return "🚴";
-        case "crossfit": return "🏋️";
-        default: return "📌";
+function crearReserva() {
+    const fecha = document.getElementById("fecha").value;
+    const hora = document.getElementById("hora").value;
+    const pista = document.getElementById("pista").value;
+
+    // Validar fecha en el pasado
+    const ahora = new Date();
+    const fechaSeleccionada = new Date(`${fecha}T${hora}`);
+    if (fechaSeleccionada < ahora) {
+        alert("No puedes hacer una reserva en el pasado.");
+        return;
     }
+
+    fetch("/api/usuario/reservas", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({ fecha, hora, pista })
+    })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(msg => { throw new Error(msg); });
+            }
+            return res.text();
+        })
+        .then(msg => {
+            alert(msg);
+            document.querySelector(".reserva-form").reset();
+            cargarReservas();
+        })
+        .catch(err => {
+            alert("Error: " + err.message);
+        });
 }
+function cargarPistas() {
+    fetch("/api/pistas")
+        .then(res => {
+            if (!res.ok) throw new Error("No se pudieron cargar las pistas");
+            return res.json();
+        })
+        .then(pistas => {
+            const select = document.getElementById("pista");
+            select.innerHTML = '<option value="">--Selecciona pista--</option>'; // reset
+
+            pistas.forEach(p => {
+                const option = document.createElement("option");
+                option.value = p.id;
+                option.textContent = p.nombre;
+                select.appendChild(option);
+            });
+        })
+        .catch(err => {
+            console.error("Error cargando pistas:", err);
+            alert("Error al cargar las pistas disponibles.");
+        });
+}
+

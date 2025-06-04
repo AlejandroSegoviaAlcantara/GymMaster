@@ -547,4 +547,34 @@ nav a {
     .login-button:hover {
         background-color: #45a049;
     }
+#logoutBtn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 30px auto;
+    display: block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+#logoutBtn:hover {
+    background-color: #cc0000;
+}
+#formCrearClase input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+.compra-historial {
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
 

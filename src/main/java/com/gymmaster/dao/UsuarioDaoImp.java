@@ -35,7 +35,7 @@ public class UsuarioDaoImp implements UsuarioDao {
 
     @Override
     public void registrar(Usuario usuario) {
-        entityManager.merge(usuario);
+        entityManager.persist(usuario);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class UsuarioDaoImp implements UsuarioDao {
                 .setParameter("email", usuario.getEmail())
                 .setParameter("password", usuario.getPassword())
                 .getResultList();
-
+        
         return lista.isEmpty() ? null : lista.get(0);
     }
 

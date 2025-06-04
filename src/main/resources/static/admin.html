@@ -22,28 +22,27 @@
         <h2>Panel de Administración</h2>
 
         <div class="admin-section">
-            <h3>Gestión de Usuarios</h3>
-            <button class="cta-button">Añadir Usuario</button>
-            <button class="cta-button">Ver Todos</button>
-        </div>
-
-        <div class="admin-section">
             <h3>Gestión de Clases</h3>
-            <button class="cta-button">Crear Clase</button>
+            <button class="cta-button" onclick="mostrarFormularioClase()">Crear Clase</button>
             <button class="cta-button">Calendario</button>
+
+            <!-- Formulario oculto -->
+            <form id="formCrearClase" class="hidden">
+                <input type="text" id="nombrePista" placeholder="Nombre de la clase/pista" required class="input-clase" />
+                <button type="submit" class="cta-button">Guardar Clase</button>
+            </form>
+
+            <!-- Lista de clases -->
+            <ul id="listaPistas"></ul>
         </div>
 
-        <div class="admin-section">
-            <h3>Estadísticas</h3>
-            <p>Usuarios activos:</p>
-            <p>Reservas esta semana:</p>
-            <p>Productos vendidos:</p>
-        </div>
+
     </section>
     
     <button id="logoutBtn">Cerrar sesión</button>
 
     <script src="js/admin.js"></script>
+    <script src="js/logout.js"></script>
 
     <footer>
         &copy; 2025 GymMaster. Todos los derechos reservados.
